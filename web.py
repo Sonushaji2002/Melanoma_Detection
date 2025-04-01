@@ -15,6 +15,7 @@ model = load_model(MODEL_PATH)
 # Define categories
 CATEGORIES = ["Benign", "Malignant"]
 
+# Prediction function with improved logic and threshold adjustment
 def predict(image):
     image = image.resize((150, 150))
     image = img_to_array(image) / 255.0
@@ -24,7 +25,12 @@ def predict(image):
     class_index = np.argmax(prediction)  # Get index of highest probability
     confidence = prediction[class_index] * 100  # Convert to percentage
     label = CATEGORIES[class_index]
-    
+
+    # Adjust threshold (e.g., 0.4) for predicting Malignant class
+    if label == "Malignant" and confidence < 60:
+        label = "Benign"  # If the confidence is low, predict Benign
+        confidence = 100 - confidence  # Inverse confidence for the Benign class
+
     return label, confidence
 
 # Initialize session state for navigation
